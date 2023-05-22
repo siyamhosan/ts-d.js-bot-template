@@ -1,21 +1,23 @@
 import { EmbedBuilder } from 'discord.js'
-import { Command, CommandRun } from '../../../structures/base/Command.js'
+import { UniCommand, UniCommandRun } from '../../../structures/base/UniCommand.js'
 
-class PingCmd extends Command {
+class InfoUni extends UniCommand {
   constructor () {
-    super({
-      name: 'ping',
-      category: 'Bot',
-      description: 'Pong!'
-    })
+    super(
+      {
+        name: 'info',
+        category: 'Client',
+        description: 'Shows info about the client!'
+      }
+    )
   }
 
-  async run ({ message, client }: CommandRun) {
-    const msg = await message.reply({
+  async run ({ ctx, client }: UniCommandRun) {
+    const msg = await ctx.reply({
       content: 'Pinging...'
     })
 
-    const ping = msg.createdTimestamp - message.createdTimestamp
+    const ping = msg.createdTimestamp - ctx.createdTimestamp
     const apiPing = Math.round(client.ws.ping)
 
     msg.edit({
@@ -33,4 +35,4 @@ class PingCmd extends Command {
   }
 }
 
-export default PingCmd
+export default InfoUni

@@ -3,7 +3,7 @@ import Bot from './structures/library/Client.js'
 const bot = new Bot()
 
 bot.login().then(() => {
-  ;[
+  [
     'unhandledRejection',
     'uncaughtException',
     'uncaughtExceptionMonitor'
