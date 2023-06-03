@@ -1,11 +1,5 @@
-import {
-  EmbedBuilder,
-  Message,
-  PermissionFlagsBits,
-  PermissionsBitField
-} from 'discord.js'
+import { EmbedBuilder, Message, PermissionsBitField } from 'discord.js'
 import Bot from '../library/Client.js'
-import { GuildModel } from '../../schemas/Models.js'
 
 export interface CommandRun {
   message: Message
@@ -140,21 +134,5 @@ export async function CommandValidator (
   if (command.owner && message.author.id !== `${client.config.OWNER}`) {
     embed.setDescription(`Only <@${client.config.OWNER}> Can Use this Command`)
     return message.channel.send({ embeds: [embed] })
-  }
-
-  const guild = await GuildModel.findOne({ GuildId: message.guildId })
-  if (command.manager && guild) {
-    if (
-      !message.member?.permissions.has(PermissionFlagsBits.ManageGuild) ||
-      !guild.managers.some((r: string) =>
-        message.member?.roles.cache.map(r => r.id).includes(r)
-      ) ||
-      message.guild.ownerId !== message.author.id
-    ) {
-      embed.setDescription(
-        `You don't have **Manager role** in this server to execute this **\`${command.name}\`** command.`
-      )
-      return message.channel.send({ embeds: [embed] })
-    }
   }
 }

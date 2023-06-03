@@ -2,14 +2,12 @@ import {
   ChatInputCommandInteraction,
   EmbedBuilder,
   Message,
-  PermissionFlagsBits,
   PermissionsBitField,
   SlashCommandBuilder,
   User
 } from 'discord.js'
 import Bot from '../library/Client.js'
 import { CommandOptions } from './Command.js'
-import { GuildModel } from '../../schemas/Models.js'
 
 export interface UniCommandRun {
   ctx: ChatInputCommandInteraction | Message
@@ -126,25 +124,5 @@ export async function UniCommandValidator (
   if (command.owner && commandUser.id !== `${client.config.OWNER}`) {
     embed.setDescription(`Only <@${client.config.OWNER}> Can Use this Command`)
     return ctx.channel?.send({ embeds: [embed] })
-  }
-
-  const guild = await GuildModel.findOne({ GuildId: ctx.guildId })
-  if (command.manager && guild) {
-    if (
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      !ctx.member?.permissions.has(PermissionFlagsBits.ManageGuild) ||
-      !guild.managers.some((r: string) =>
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        ctx.member?.roles.cache.map((r: string) => r.id).includes(r)
-      ) ||
-      ctx.guild.ownerId !== commandUser.id
-    ) {
-      embed.setDescription(
-        `You don't have **Manager role** in this server to execute this **\`${command.name}\`** command.`
-      )
-      return ctx.channel?.send({ embeds: [embed] })
-    }
   }
 }
