@@ -14,17 +14,17 @@ import {
 import Bot from '../library/Client.js'
 
 export interface SlashCommandRun {
-  interaction: CommandInteraction
-  options: Omit<CommandInteractionOptionResolver, 'getMessage' | 'getFocused'>
-  client: Bot
+  interaction: CommandInteraction;
+  options: Omit<CommandInteractionOptionResolver, 'getMessage' | 'getFocused'>;
+  client: Bot;
 }
 
 export interface SlashCommandOptions {
-  data?: SlashCommandBuilder | undefined
-  subCommand?: string | undefined
-  manager?: boolean
-  botPerms?: PermissionsBitField[]
-  beta?: boolean
+  data?: SlashCommandBuilder | undefined;
+  subCommand?: string | undefined;
+  manager?: boolean;
+  botPerms?: PermissionsBitField[];
+  beta?: boolean;
 }
 
 export abstract class SlashCommand {
@@ -42,7 +42,7 @@ export abstract class SlashCommand {
     this.beta = options.beta || false
   }
 
-  public abstract run?(options: SlashCommandRun): void
+  public abstract run?(options: SlashCommandRun): void;
 }
 
 export async function SlashCommandValidator (
@@ -59,7 +59,7 @@ export async function SlashCommandValidator (
       embed
         .setDescription(
           `I don't have **\`${cmd.botPerms
-            .map(perm => perm)
+            .map((perm) => perm)
             .join(
               ', '
             )}\`** permission in ${interaction.channel?.toString()} to execute this **\`${
@@ -77,8 +77,9 @@ export async function SlashCommandValidator (
         interaction.editReply({
           embeds: [embed],
           components: [
-            // @ts-ignore
-            new ActionRowBuilder().addComponents(fixPermissionsButton)
+            new ActionRowBuilder<ButtonBuilder>().addComponents(
+              fixPermissionsButton
+            )
           ]
         })
         return true
@@ -86,8 +87,9 @@ export async function SlashCommandValidator (
         interaction.reply({
           embeds: [embed],
           components: [
-            // @ts-ignore
-            new ActionRowBuilder().addComponents(fixPermissionsButton)
+            new ActionRowBuilder<ButtonBuilder>().addComponents(
+              fixPermissionsButton
+            )
           ]
         })
         return true
