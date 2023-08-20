@@ -7,8 +7,6 @@ import eventManager from '../helper/eventManager.js'
 import { SlashCommand } from '../base/SlashCommand.js'
 import { UniCommand } from '../base/UniCommand.js'
 import slashManager from '../helper/slashManager.js'
-import mongoose from 'mongoose'
-import chalk from 'chalk'
 
 class Bot extends Client {
   public readonly config = process.env
@@ -48,34 +46,6 @@ class Bot extends Client {
     this.subCommands = new Collection()
     this.uniCommands = new Collection()
     Logger()
-
-    this.config.MONGOURL = process.env.MONGOURL || 'sdasdasdasdasdasdasdasdasd'
-
-    /**
-     *  Mongose for data base
-     */
-    const dbOptions = {
-      useNewUrlParser: true,
-      autoIndex: false,
-      connectTimeoutMS: 10000,
-      family: 4,
-      useUnifiedTopology: true
-    }
-    mongoose.connect(this.config.MONGOURL, dbOptions)
-    mongoose.Promise = global.Promise
-    mongoose.set('strictQuery', false)
-    mongoose.connection.on('connected', () => {
-      console.info(
-        chalk.greenBright('[DB] DATABASE CONNECTED'),
-        chalk.bold('DBr')
-      )
-    })
-    mongoose.connection.on('err', err => {
-      console.warn(`Mongoose connection error: \n ${err.stack}`, 'error')
-    })
-    mongoose.connection.on('disconnected', () => {
-      console.warn('Mongoose disconnected', 'DB')
-    })
   }
 
   override async login () {
