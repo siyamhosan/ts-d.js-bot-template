@@ -41,7 +41,7 @@ export async function UniCommandValidator (
   args: string[],
   uniCommand: UniCommand,
   client: Bot
-) {
+): Promise<boolean> {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const commandUser: User = ctx.author || ctx.user || ctx.member?.user
@@ -52,12 +52,13 @@ export async function UniCommandValidator (
       PermissionsBitField.resolve('SendMessages')
     )
   ) {
-    return await commandUser.dmChannel
+    await commandUser.dmChannel
       ?.send({
         content: `I don't have **\`SEND_MESSAGES\`** permission in <#${ctx.channelId}> to execute this **\`${command.name}\`** command.`
       })
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       .catch(() => {})
+    return true
   }
 
   if (
@@ -65,7 +66,7 @@ export async function UniCommandValidator (
       PermissionsBitField.resolve('ViewChannel')
     )
   ) {
-    return
+    return true
   }
 
   if (
@@ -73,12 +74,13 @@ export async function UniCommandValidator (
       PermissionsBitField.resolve('EmbedLinks')
     )
   ) {
-    return await ctx.channel
+    await ctx.channel
       ?.send({
         content: `I don't have **\`EMBED_LINKS\`** permission in <#${ctx.channelId}> to execute this **\`${command.name}\`** command.`
       })
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       .catch(() => {})
+    return true
   }
 
   const embed = new EmbedBuilder().setColor('Red')
@@ -91,7 +93,8 @@ export async function UniCommandValidator (
     }
 
     embed.setDescription(reply)
-    return ctx.channel?.send({ embeds: [embed] })
+    ctx.channel?.send({ embeds: [embed] })
+    return true
   }
 
   if (command.botPerms) {
@@ -103,7 +106,8 @@ export async function UniCommandValidator (
       embed.setDescription(
         `I don't have **\`${command.botPerms}\`** permission in <#${ctx.channelId}> to execute this **\`${command.name}\`** command.`
       )
-      return ctx.channel?.send({ embeds: [embed] })
+      ctx.channel?.send({ embeds: [embed] })
+      return true
     }
   }
   if (command.userPerms) {
@@ -117,12 +121,15 @@ export async function UniCommandValidator (
       embed.setDescription(
         `You don't have **\`${command.userPerms}\`** permission in <#${ctx.channelId}> to execute this **\`${command.name}\`** command.`
       )
-      return ctx.channel?.send({ embeds: [embed] })
+      ctx.channel?.send({ embeds: [embed] })
+      return true
     }
   }
 
   if (command.owner && commandUser.id !== `${client.config.OWNER}`) {
     embed.setDescription(`Only <@${client.config.OWNER}> Can Use this Command`)
-    return ctx.channel?.send({ embeds: [embed] })
+    ctx.channel?.send({ embeds: [embed] })
+    return true
   }
+  return false
 }

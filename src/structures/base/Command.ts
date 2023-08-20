@@ -58,18 +58,19 @@ export async function CommandValidator (
   args: string[],
   command: Command,
   client: Bot
-) {
+): Promise<boolean> {
   if (
     !message.guild?.members.me?.permissions.has(
       PermissionsBitField.resolve('SendMessages')
     )
   ) {
-    return await message.author.dmChannel
+    await message.author.dmChannel
       ?.send({
         content: `I don't have **\`SEND_MESSAGES\`** permission in <#${message.channelId}> to execute this **\`${command.name}\`** command.`
       })
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       .catch(() => {})
+    return true
   }
 
   if (
@@ -77,7 +78,7 @@ export async function CommandValidator (
       PermissionsBitField.resolve('ViewChannel')
     )
   ) {
-    return
+    return true
   }
 
   if (
@@ -85,12 +86,14 @@ export async function CommandValidator (
       PermissionsBitField.resolve('EmbedLinks')
     )
   ) {
-    return await message.channel
+    await message.channel
       .send({
         content: `I don't have **\`EMBED_LINKS\`** permission in <#${message.channelId}> to execute this **\`${command.name}\`** command.`
       })
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       .catch(() => {})
+
+    return true
   }
 
   const embed = new EmbedBuilder().setColor('Red')
@@ -103,7 +106,8 @@ export async function CommandValidator (
     }
 
     embed.setDescription(reply)
-    return message.channel.send({ embeds: [embed] })
+    message.channel.send({ embeds: [embed] })
+    return true
   }
 
   if (command.botPerms) {
@@ -115,7 +119,8 @@ export async function CommandValidator (
       embed.setDescription(
         `I don't have **\`${command.botPerms}\`** permission in <#${message.channelId}> to execute this **\`${command.name}\`** command.`
       )
-      return message.channel.send({ embeds: [embed] })
+      message.channel.send({ embeds: [embed] })
+      return true
     }
   }
   if (command.userPerms) {
@@ -127,12 +132,16 @@ export async function CommandValidator (
       embed.setDescription(
         `You don't have **\`${command.userPerms}\`** permission in <#${message.channelId}> to execute this **\`${command.name}\`** command.`
       )
-      return message.channel.send({ embeds: [embed] })
+      message.channel.send({ embeds: [embed] })
+      return true
     }
   }
 
   if (command.owner && message.author.id !== `${client.config.OWNER}`) {
     embed.setDescription(`Only <@${client.config.OWNER}> Can Use this Command`)
-    return message.channel.send({ embeds: [embed] })
+
+    message.channel.send({ embeds: [embed] })
+    return true
   }
+  return false
 }

@@ -18,7 +18,7 @@ class Command extends Event<'messageCreate'> {
     })
   }
 
-  run (message: Message) {
+  async run (message: Message) {
     if (message.author.bot) return
     const prefix = '?'
 
@@ -75,7 +75,7 @@ class Command extends Event<'messageCreate'> {
       )
 
     if (command) {
-      CommandValidator(message, prefix, args, command, client)
+      if (await CommandValidator(message, prefix, args, command, client)) return
 
       try {
         command.run({
@@ -91,7 +91,11 @@ class Command extends Event<'messageCreate'> {
         })
       }
     } else if (uniCommand) {
-      UniCommandValidator(message, prefix, args, uniCommand, client)
+      if (
+        await UniCommandValidator(message, prefix, args, uniCommand, client)
+      ) {
+        return
+      }
 
       try {
         uniCommand.run({

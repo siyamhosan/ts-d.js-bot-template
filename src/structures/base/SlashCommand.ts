@@ -48,7 +48,7 @@ export abstract class SlashCommand {
 export async function SlashCommandValidator (
   interaction: ChatInputCommandInteraction,
   cmd: SlashCommand
-) {
+): Promise<boolean> {
   const embed = new EmbedBuilder().setColor(Colors.Red)
   if (cmd.botPerms) {
     if (
