@@ -1,3 +1,7 @@
 build
 node_modules
 .env
+/src/main/events/bundle
+/src/main/commands/bundle
+/src/main/slashCommands/bundle
+/src/main/uniCommands/bundle

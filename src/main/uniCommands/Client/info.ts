@@ -1,15 +1,16 @@
 import { EmbedBuilder } from 'discord.js'
-import { UniCommand, UniCommandRun } from '../../../structures/base/UniCommand.js'
+import {
+  UniCommand,
+  UniCommandRun
+} from '../../../structures/base/UniCommand.js'
 
-class InfoUni extends UniCommand {
+export class InfoUni extends UniCommand {
   constructor () {
-    super(
-      {
-        name: 'info',
-        category: 'Client',
-        description: 'Shows info about the client!'
-      }
-    )
+    super({
+      name: 'info',
+      category: 'Client',
+      description: 'Shows info about the client!'
+    })
   }
 
   async run ({ ctx, client }: UniCommandRun) {
@@ -34,5 +35,3 @@ class InfoUni extends UniCommand {
     })
   }
 }
-
-export default InfoUni

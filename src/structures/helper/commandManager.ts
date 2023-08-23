@@ -1,11 +1,11 @@
-import { readdir } from 'fs/promises'
-import { Command } from '../base/Command.js'
 import Bot from '../library/Client.js'
 import chalk from 'chalk'
 import { TableUserConfig, table } from 'table'
+import { readFileSync } from 'fs'
 
 export default async (client: Bot) => {
   console.info(chalk.bold('Loading Prefix Commands...'), chalk.bold('pre'))
+  const startLoading = Date.now()
 
   const contents = [['No.', 'Name', 'Category']]
   const config: TableUserConfig = {
@@ -35,29 +35,41 @@ export default async (client: Bot) => {
     }
   }
 
-  ;(await readdir('./src/main/commands/')).forEach(async dir => {
-    const commandFiles = (await readdir(`./src/main/commands/${dir}/`)).filter(
-      f => f.endsWith('.ts')
-    )
-    for (const file of commandFiles) {
-      const command: Command = new // eslint-disable-next-line new-cap
-      (await import(`../../main/commands/${dir}/${file}`)).default()
-      if (command.name) {
-        client.commands.set(command.name, command)
-        command.aliases.forEach(alias => {
-          client.aliases.set(alias, command.name)
-        })
-        contents.push([
-          `${client.commands.size}`,
-          command.name,
-          command.category
-        ])
-      }
-    }
-    table(contents, config)
-      .split('\n')
-      .forEach(text => {
-        console.info(text, chalk.bold('pre'))
+  const { exportedClasses } = JSON.parse(
+    readFileSync('./src/main/commands/bundle/commands-compiled.json', 'utf-8')
+  )
+
+  if (!exportedClasses) return
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const allCommands: Record<string, any> = await import(
+    '../../main/commands/bundle/commands-bundled.js'
+  )
+
+  for (const command of exportedClasses) {
+    const CommandClass = allCommands[command]
+    const commandInstance = new CommandClass(client)
+
+    if (commandInstance.name) {
+      client.commands.set(commandInstance.name, commandInstance)
+      commandInstance.aliases.forEach((alias: string) => {
+        client.aliases.set(alias, commandInstance.name)
       })
-  })
+      contents.push([
+        `${client.commands.size}`,
+        commandInstance.name,
+        commandInstance.category
+      ])
+    }
+  }
+  table(contents, config)
+    .split('\n')
+    .forEach(text => {
+      console.info(text, chalk.bold('pre'))
+    })
+  console.trace(
+    startLoading,
+    chalk.bold('Loaded Prefix Commands in: '),
+    chalk.bold('pre')
+  )
 }

@@ -10,7 +10,7 @@ import { CommandValidator } from '../../../structures/base/Command.js'
 import chalk from 'chalk'
 import { UniCommandValidator } from '../../../structures/base/UniCommand.js'
 
-class Command extends Event<'messageCreate'> {
+export class CommandsEvent extends Event<'messageCreate'> {
   constructor () {
     super({
       name: 'messageCreate',
@@ -113,5 +113,3 @@ class Command extends Event<'messageCreate'> {
     }
   }
 }
-
-export default Command

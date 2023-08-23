@@ -1,10 +1,9 @@
-import { readdir, stat } from 'node:fs/promises'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Bot from '../library/Client.js'
 import chalk from 'chalk'
 import { TableUserConfig, table } from 'table'
-import { SlashCommand } from '../base/SlashCommand.js'
 import { REST, Routes, SlashCommandBuilder } from 'discord.js'
-import { UniCommand } from '../base/UniCommand.js'
+import { readFileSync } from 'node:fs'
 
 export default async (client: Bot) => {
   const contents = [['No.', 'Name', 'Type']]
@@ -35,85 +34,100 @@ export default async (client: Bot) => {
     }
   }
 
-  console.info(chalk.bold('Loading Slash Commands...'), chalk.bold('sla'))
+  const startTime = Date.now()
+
+  console.info(
+    chalk.bold('Loading Slash And Uni Commands...'),
+    chalk.bold('sla')
+  )
+
+  const { exportedClasses } = JSON.parse(
+    readFileSync(
+      './src/main/slashCommands/bundle/slashCommands-compiled.json',
+      'utf-8'
+    )
+  )
+
+  if (!exportedClasses) return
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const allSlashCommands: Record<string, any> = await import(
+    '../../main/slashCommands/bundle/slashCommands-bundled.js'
+  )
+
   let i = 1
   const data: SlashCommandBuilder[] = []
-  ;(await readdir('./src/main/slashCommands/')).forEach(async dir => {
-    const files = (await readdir(`./src/main/slashCommands/${dir}/`)).filter(
-      f => f.endsWith('.ts')
+  for (const slash of exportedClasses) {
+    const SlashClass = allSlashCommands[slash]
+    const slashInstance = new SlashClass(client)
+
+    if (slashInstance.subCommand) {
+      return client.subCommands.set(slashInstance.subCommand, slashInstance)
+    }
+
+    client.slashCommands.set(
+      slashInstance.data?.name || 'default',
+      slashInstance
     )
 
-    for await (const file of files) {
-      if ((await stat(`src/main/slashCommands/${dir}/${file}`)).isDirectory()) {
-        const slashCommand: SlashCommand =
-          new // eslint-disable-next-line new-cap
-          (await import(`../../main/slashCommands/${dir}/${file}`)).default()
+    if (slashInstance.data) data.push(slashInstance.data)
 
-        if (slashCommand.subCommand) {
-          return client.subCommands.set(slashCommand.subCommand, slashCommand)
-        }
+    contents.push([
+      String(`${i++}.`),
+      slashInstance.data?.name || 'default',
+      'Slash'
+    ])
+  }
 
-        client.slashCommands.set(
-          slashCommand.data?.name || 'default',
-          slashCommand
-        )
+  i = 1
 
-        if (slashCommand.data) data.push(slashCommand.data)
-      } else {
-        const slashCommand: SlashCommand =
-          new // eslint-disable-next-line new-cap
-          (await import(`../../main/slashCommands/${dir}/${file}`)).default()
-        if (slashCommand.subCommand) {
-          return client.subCommands.set(slashCommand.subCommand, slashCommand)
-        }
-
-        client.slashCommands.set(
-          slashCommand.data?.name || 'default',
-          slashCommand
-        )
-
-        if (slashCommand.data) data.push(slashCommand.data)
-        contents.push([
-          String(`${i++}.`),
-          slashCommand.data?.name || 'default',
-          'Slash'
-        ])
-      }
-    }
-  })
-  ;(await readdir('./src/main/uniCommands/')).forEach(async dir => {
-    const files = (await readdir(`./src/main/uniCommands/${dir}/`)).filter(f =>
-      f.endsWith('.ts')
+  const allUniCommands: Record<string, any> = await import(
+    '../../main/uniCommands/bundle/uniCommands-bundled.js'
+  )
+  const uniBundle = JSON.parse(
+    readFileSync(
+      './src/main/uniCommands/bundle/uniCommands-compiled.json',
+      'utf-8'
     )
-    for await (const file of files) {
-      const slashCommand: UniCommand = new // eslint-disable-next-line new-cap
-      (await import(`../../main/uniCommands/${dir}/${file}`)).default()
-      client.uniCommands.set(slashCommand.slash.name, slashCommand)
+  )
 
-      data.push(slashCommand.slash)
+  const uniClasses = uniBundle.exportedClasses
 
-      contents.push([String(`${i++}.`), slashCommand.slash.name, 'Uni'])
+  for (const uni of uniClasses) {
+    const UniClass = allUniCommands[uni]
+    const uniInstance = new UniClass(client)
+
+    client.uniCommands.set(uniInstance.slash.name, uniInstance)
+    data.push(uniInstance.slash)
+
+    contents.push([String(`${i++}.`), uniInstance.slash.name, 'Uni'])
+  }
+
+  await table(contents, config)
+    .split('\n')
+    .forEach(text => {
+      console.info(text, chalk.bold('sla'))
+    })
+
+  console.trace(
+    startTime,
+    chalk.bold('Loaded Slash And Uni Commands In '),
+    chalk.bold('sla')
+  )
+
+  const rest = new REST({ version: '10' }).setToken(client.config.TOKEN || '')
+  ;(async () => {
+    try {
+      console.info('Started refreshing application (/) commands.', 'cmd')
+      await rest.put(
+        Routes.applicationCommands(client.config.clientID || '000'),
+        {
+          body: data
+        }
+      )
+      console.info('Successfully reloaded application (/) commands.', 'cmd')
+    } catch (error) {
+      console.error(error)
     }
-    await table(contents, config)
-      .split('\n')
-      .forEach(text => {
-        console.info(text, chalk.bold('sla'))
-      })
-
-    const rest = new REST({ version: '10' }).setToken(client.config.TOKEN || '')
-    ;(async () => {
-      try {
-        console.info('Started refreshing application (/) commands.', 'cmd')
-        await rest.put(
-          Routes.applicationCommands(client.config.clientID || '000'),
-          {
-            body: data
-          }
-        )
-        console.info('Successfully reloaded application (/) commands.', 'cmd')
-      } catch (error) {
-        console.error(error)
-      }
-    })()
-  })
+  })()
 }

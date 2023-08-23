@@ -15,7 +15,7 @@ export interface CommandOptions {
   args?: boolean
   usage?: string
   aliases?: string[]
-  userPerms?: PermissionsBitField[]
+  userPerms?: PermissionsBitField[] | bigint[]
   botPerms?: PermissionsBitField[]
   owner?: boolean
   manager?: boolean
@@ -29,7 +29,7 @@ export abstract class Command {
   readonly args: boolean
   readonly usage: string
   readonly aliases: string[]
-  readonly userPerms: PermissionsBitField[]
+  readonly userPerms: PermissionsBitField[] | bigint[]
   readonly botPerms: PermissionsBitField[]
   readonly owner: boolean
   readonly manager: boolean

@@ -1,10 +1,10 @@
 import { Interaction } from 'discord.js'
 import { Event } from '../../../structures/base/Event.js'
 import { SlashCommandValidator } from '../../../structures/base/SlashCommand.js'
-import bot from '../../../index.js'
+import client from '../../../index.js'
 import { UniCommandValidator } from '../../../structures/base/UniCommand.js'
 
-class InteractionCommand extends Event<'interactionCreate'> {
+export class InteractionCommandEvent extends Event<'interactionCreate'> {
   constructor () {
     super({
       name: 'interactionCreate',
@@ -14,9 +14,9 @@ class InteractionCommand extends Event<'interactionCreate'> {
 
   run (interaction: Interaction) {
     if (!interaction.isChatInputCommand()) return
-    const slashCommand = bot.slashCommands.get(interaction.commandName)
+    const slashCommand = client.slashCommands.get(interaction.commandName)
     const subCommand = interaction.options.getSubcommand(false)
-    const uniCommand = bot.uniCommands.get(interaction.commandName)
+    const uniCommand = client.uniCommands.get(interaction.commandName)
     if (slashCommand) {
       SlashCommandValidator(interaction, slashCommand)
 
@@ -25,7 +25,7 @@ class InteractionCommand extends Event<'interactionCreate'> {
         // @ts-ignore
         slashCommand.run({
           interaction,
-          client: bot
+          client
         })
       } catch (err) {
         console.error(err)
@@ -40,7 +40,7 @@ class InteractionCommand extends Event<'interactionCreate'> {
         })
       }
     } else if (subCommand) {
-      const subCommandFile = bot.subCommands.get(subCommand)
+      const subCommandFile = client.subCommands.get(subCommand)
       if (!subCommandFile) {
         return interaction.reply({
           content: ' This sub command is outdated.',
@@ -54,7 +54,7 @@ class InteractionCommand extends Event<'interactionCreate'> {
         // @ts-ignore
         subCommandFile.run({
           interaction,
-          client: bot
+          client
         })
       } catch (err) {
         console.error(err)
@@ -69,14 +69,14 @@ class InteractionCommand extends Event<'interactionCreate'> {
         })
       }
     } else if (uniCommand) {
-      UniCommandValidator(interaction, '?', [], uniCommand, bot)
+      UniCommandValidator(interaction, '?', [], uniCommand, client)
 
       try {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         uniCommand.run({
           ctx: interaction,
-          client: bot
+          client
         })
       } catch (err) {
         console.error(err)
@@ -93,5 +93,3 @@ class InteractionCommand extends Event<'interactionCreate'> {
     }
   }
 }
-
-export default InteractionCommand

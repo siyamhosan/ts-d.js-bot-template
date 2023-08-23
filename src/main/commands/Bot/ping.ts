@@ -1,7 +1,7 @@
 import { EmbedBuilder } from 'discord.js'
 import { Command, CommandRun } from '../../../structures/base/Command.js'
 
-class PingCmd extends Command {
+export class PingCmd extends Command {
   constructor () {
     super({
       name: 'ping',
@@ -32,5 +32,3 @@ class PingCmd extends Command {
     })
   }
 }
-
-export default PingCmd

@@ -1,8 +1,8 @@
 import { Event } from '../../../structures/base/Event.js'
-import bot from '../../../index.js'
+import client from '../../../index.js'
 import chalk from 'chalk'
 
-class ReadyEvent extends Event<'ready'> {
+export class ReadyEvent extends Event<'ready'> {
   constructor () {
     super({
       name: 'ready',
@@ -11,9 +11,7 @@ class ReadyEvent extends Event<'ready'> {
   }
 
   run () {
-    console.info(`Client logged in as "${bot.user?.tag}"`, chalk.bold('cli'))
+    console.info(`Client logged in as "${client.user?.tag}"`, chalk.bold('cli'))
     // bot.application?.commands.set(bot.commands.array)
   }
 }
-
-export default ReadyEvent

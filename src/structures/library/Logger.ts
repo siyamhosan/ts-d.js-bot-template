@@ -7,6 +7,7 @@ interface Logger extends Console {
   warn(text: string, group?: string): void
   debug(text: string, group?: string): void
   error(text: string, group?: string): void
+  trace(start: number, text: string, group?: string): void
 }
 
 const myConsole: Logger = console
@@ -16,7 +17,8 @@ function Logger () {
     info: console.info,
     warn: console.warn,
     error: console.error,
-    debug: console.debug
+    debug: console.debug,
+    trace: console.timeLog
   }
 
   myConsole.info = (text: string, group?: string) => {
@@ -45,6 +47,22 @@ function Logger () {
 
     if (group) backup.info(`[${d} ${colorize('debug')}] [${group}] ${text}`)
     else backup.info(`[${d} ${colorize('debug')}] ${text}`)
+  }
+
+  myConsole.trace = (start: number, text: string, group?: string) => {
+    const d = new Date().toLocaleString().toUpperCase().replace(', ', ' ')
+    const took = (Date.now() - start) / 1000
+    const tookColor = (took: number) => {
+      if (took < 5) return chalk.greenBright(took + 's')
+      else if (took < 15) return chalk.yellowBright(took + 's')
+      else return chalk.redBright(took + 's')
+    }
+
+    if (group) {
+      backup.info(
+        `[${d} ${colorize('debug')}] [${group}] ${text} ${tookColor(took)}`
+      )
+    } else backup.info(`[${d} ${colorize('debug')}] ${text} ${tookColor(took)}`)
   }
 }
 

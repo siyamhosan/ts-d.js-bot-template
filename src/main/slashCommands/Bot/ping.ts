@@ -1,6 +1,9 @@
 import { EmbedBuilder, SlashCommandBuilder } from 'discord.js'
-import { SlashCommand, SlashCommandRun } from '../../../structures/base/SlashCommand.js'
-class PingCmd extends SlashCommand {
+import {
+  SlashCommand,
+  SlashCommandRun
+} from '../../../structures/base/SlashCommand.js'
+export class PingCmd extends SlashCommand {
   constructor () {
     super({
       data: new SlashCommandBuilder().setName('ping').setDescription('Pong!')
@@ -31,5 +34,3 @@ class PingCmd extends SlashCommand {
     })
   }
 }
-
-export default PingCmd
