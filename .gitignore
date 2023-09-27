@@ -1,7 +1,10 @@
 build
 node_modules
 .env
-/src/main/events/bundle
-/src/main/commands/bundle
-/src/main/slashCommands/bundle
-/src/main/uniCommands/bundle
+
+
+# ignore all files with compiled.json in end of file name one example is src/main/events/bundle/events-compiled.json  
+
+**/commands-compiled.json
+**/slashCommands-compiled.json
+**/uniCommands-compiled.json

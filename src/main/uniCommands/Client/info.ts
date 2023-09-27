@@ -1,8 +1,5 @@
 import { EmbedBuilder } from 'discord.js'
-import {
-  UniCommand,
-  UniCommandRun
-} from '../../../structures/base/UniCommand.js'
+import { UniCommand, UniCommandRun } from 'dtscommands'
 
 export class InfoUni extends UniCommand {
   constructor () {

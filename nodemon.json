@@ -1,6 +1,13 @@
 {
-    "exec": "node --loader ts-node/esm",
-    "verbose": true,
-    "ignore": ["build", "node_modules"],
-    "ext": "ts,js,json"
+  "exec": "node --loader ts-node/esm",
+  "verbose": true,
+  "ext": "ts,js,json",
+  "ignore": [
+    "build",
+    "node_modules",
+    "src/main/commands/bundle/**",
+    "src/main/events/bundle/**",
+    "src/main/slashCommands/bundle/**",
+    "src/main/uniCommands/bundle/**"
+  ]
 }

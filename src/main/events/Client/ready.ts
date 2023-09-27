@@ -1,4 +1,4 @@
-import { Event } from '../../../structures/base/Event.js'
+import { Event } from 'dtscommands'
 import client from '../../../index.js'
 import chalk from 'chalk'
 
