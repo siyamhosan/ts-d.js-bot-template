@@ -34,7 +34,7 @@
     "chalk": "^5.2.0",
     "discord.js": "^14.11.0",
     "dotenv": "^16.0.3",
-    "dtscommands": "^0.0.16",
+    "dtscommands": "^0.1.1",
     "table": "^6.8.1"
   }
 }

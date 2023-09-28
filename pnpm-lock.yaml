@@ -18,8 +18,8 @@ dependencies:
     specifier: ^16.0.3
     version: 16.3.1
   dtscommands:
-    specifier: ^0.0.16
-    version: 0.0.16
+    specifier: ^0.1.1
+    version: 0.1.1
   table:
     specifier: ^6.8.1
     version: 6.8.1
@@ -794,8 +794,8 @@ packages:
     engines: {node: '>=12'}
     dev: false
 
-  /dtscommands@0.0.16:
-    resolution: {integrity: sha512-AKp0cZAk/+dH1+W/ztwS9gdz14sK1iWb3yut3P8Q3Y/5YD038DRahFwZ3uBVNl8qCfi6DxQ4YC623VbDtoqiyg==}
+  /dtscommands@0.1.1:
+    resolution: {integrity: sha512-n8yfvo2vBX9D7kKiV4jbu/gzXWMbm2ApvHkGIwIM0cV1BU+RZfzsNDEYD6e710xfjIV66F5o0vRhY4FglvwEHA==}
     dependencies:
       chalk: 4.1.2
       discord.js: 14.13.0
